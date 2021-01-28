@@ -39,4 +39,9 @@ class CommitListTests: XCTestCase {
         XCTAssertEqual(cmit.sha, cmitVM.sha)
     }
 
+    func testMyConvertDateFormatter() {
+        let originalDate = "2021-01-28T22:51:19Z"
+        let convert = originalDate.my_convertDateFormatter()
+        XCTAssertEqual(convert, "01-28-2021")
+    }
 }

@@ -9,6 +9,7 @@ import UIKit
 
 class CommitController: UITableViewController {
     private let cellId = "cellId"
+    
     private var commitVMArr = [CommitViewModel]()
     private var page = 1
     
@@ -17,7 +18,11 @@ class CommitController: UITableViewController {
         // Do any additional setup after loading the view.  
         setNavBar()
         setList()
-        requestData()
+        requestData() 
+        let reControl = UIRefreshControl()
+        reControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        reControl.attributedTitle = NSAttributedString(string: "pull to refresh to page 1")
+        self.refreshControl = reControl
     }
     @objc fileprivate func requestData() {
         Service.shared.getResults(page: page) { [weak self] result in
@@ -60,6 +65,11 @@ class CommitController: UITableViewController {
             requestData()
             print(page)
         }
+    }
+    @objc fileprivate func refresh() {
+        page = 1
+        requestData()
+        refreshControl?.endRefreshing()
     }
     
     fileprivate func setNavBar() {
