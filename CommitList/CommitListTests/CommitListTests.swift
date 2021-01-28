@@ -32,7 +32,11 @@ class CommitListTests: XCTestCase {
     
     func testCommitModelAndCommitVM() {
         let cmit = CommitResult(sha: "sha111", commit: Commit(author: Author(name: "author222", date: "date2020"), message: "msg000"))
-        XCTAssertEqual(cmit.sha, "sha11")
+//        XCTAssertEqual(cmit.sha, "sha11")
+        
+        let cmitVM = CommitViewModel(commit: cmit)
+//        XCTAssertEqual("sha112", cmitVM.sha)
+        XCTAssertEqual(cmit.sha, cmitVM.sha)
     }
 
 }
