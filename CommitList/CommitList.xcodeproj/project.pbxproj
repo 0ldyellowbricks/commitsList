@@ -18,6 +18,7 @@
 		4D85859D25C36212008D663D /* CommitCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D85859C25C36212008D663D /* CommitCell.swift */; };
 		4D8585AE25C3672E008D663D /* CommitResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8585AD25C3672E008D663D /* CommitResult.swift */; };
 		4D8585B525C3695B008D663D /* CommitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8585B425C3695B008D663D /* CommitViewModel.swift */; };
+		4D8585BE25C36F18008D663D /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8585BD25C36F18008D663D /* ErrorMessage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +56,7 @@
 		4D85859C25C36212008D663D /* CommitCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitCell.swift; sourceTree = "<group>"; };
 		4D8585AD25C3672E008D663D /* CommitResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitResult.swift; sourceTree = "<group>"; };
 		4D8585B425C3695B008D663D /* CommitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitViewModel.swift; sourceTree = "<group>"; };
+		4D8585BD25C36F18008D663D /* ErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +107,7 @@
 		4D7CB69525C35BA700B383A0 /* CommitList */ = {
 			isa = PBXGroup;
 			children = (
+				4D8585BC25C36EE9008D663D /* Utilities */,
 				4D8585B225C3693B008D663D /* ViewModel */,
 				4D8585A125C366AD008D663D /* Model */,
 				4D85859325C3615C008D663D /* Extension */,
@@ -175,6 +178,14 @@
 				4D8585B425C3695B008D663D /* CommitViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		4D8585BC25C36EE9008D663D /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				4D8585BD25C36F18008D663D /* ErrorMessage.swift */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -310,6 +321,7 @@
 				4D8585AE25C3672E008D663D /* CommitResult.swift in Sources */,
 				4D7CB69725C35BA800B383A0 /* AppDelegate.swift in Sources */,
 				4D7CB69925C35BA800B383A0 /* SceneDelegate.swift in Sources */,
+				4D8585BE25C36F18008D663D /* ErrorMessage.swift in Sources */,
 				4D85859525C3617A008D663D /* MyHelper.swift in Sources */,
 				4D8585B525C3695B008D663D /* CommitViewModel.swift in Sources */,
 				4D85859D25C36212008D663D /* CommitCell.swift in Sources */,
