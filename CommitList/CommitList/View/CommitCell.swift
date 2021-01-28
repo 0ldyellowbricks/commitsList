@@ -8,6 +8,13 @@
 import UIKit
 
 class CommitCell: UITableViewCell {
+    var cellCommitVM: CommitViewModel! {
+        didSet {
+            msgLabel.text = cellCommitVM.message
+            detailLabel.text = cellCommitVM.sha
+            authorDateLabel.text = cellCommitVM.auther
+        }
+    }
     let msgLabel: UILabel = {
         let lbl = UILabel(frame: CGRect(x: 10, y: 10, width: kScreenWitdh - 20, height: 60))
         lbl.numberOfLines = 0
@@ -31,7 +38,6 @@ class CommitCell: UITableViewCell {
         lbl.text = "1111111"
         return lbl
     }()
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = .white
