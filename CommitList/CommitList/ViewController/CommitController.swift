@@ -22,8 +22,8 @@ class CommitController: UITableViewController {
         navigationItem.title = "CommitsList"
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.isTranslucent = false
-        navigationController?.navigationBar.backgroundColor = .blue
-        navigationController?.navigationBar.barTintColor = .green
+        navigationController?.navigationBar.backgroundColor = UIColor.rgb(r: 50, g: 199, b: 242) 
+        navigationController?.navigationBar.barTintColor = UIColor.rgb(r: 50, g: 199, b: 242)
         navigationController?.navigationBar.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
     }
 
