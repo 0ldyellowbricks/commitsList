@@ -97,6 +97,7 @@
 		4D7CB69525C35BA700B383A0 /* CommitList */ = {
 			isa = PBXGroup;
 			children = (
+				4D85858F25C36040008D663D /* View */,
 				4D7CB6CC25C35D1C00B383A0 /* ViewController */,
 				4D7CB69625C35BA800B383A0 /* AppDelegate.swift */,
 				4D7CB69825C35BA800B383A0 /* SceneDelegate.swift */,
@@ -131,6 +132,13 @@
 				4D7CB69A25C35BA800B383A0 /* CommitController.swift */,
 			);
 			path = ViewController;
+			sourceTree = "<group>";
+		};
+		4D85858F25C36040008D663D /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
