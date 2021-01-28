@@ -11,9 +11,10 @@ class Service {
     static let shared = Service()
     
     func getResults(completion: @escaping (Result<[CommitResult], ErrorMessage>) -> ()) {
+        let parameter = "?page=2&per_page=25"
         
 //        let urlString = "https://api.github.com/repos/0ldyellowbricks/commitsList/commits"
-        let urlString = "https://api.github.com/repos/SDWebImage/SDWebImage/commits"
+        let urlString = "https://api.github.com/repos/SDWebImage/SDWebImage/commits" + parameter
         
         guard let url = URL(string: urlString) else { return }
         

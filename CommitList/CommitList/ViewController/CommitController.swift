@@ -10,6 +10,7 @@ import UIKit
 class CommitController: UITableViewController {
     private let cellId = "cellId"
     private var commitVMArr = [CommitViewModel]()
+    private var page = 1
     
     override func viewDidLoad() {
         super.viewDidLoad()
