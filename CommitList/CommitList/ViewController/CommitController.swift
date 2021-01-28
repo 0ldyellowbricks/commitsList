@@ -49,6 +49,16 @@ class CommitController: UITableViewController {
         return 130
     }
     
+    override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        let currentOffset = scrollView.contentOffset.y
+        let maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height
+        if maximumOffset - currentOffset <= 10.0 {
+            page += 1
+            requestData()
+            print(page)
+        }
+    }
+    
     fileprivate func setNavBar() {
         navigationItem.title = "CommitsList"
         navigationController?.navigationBar.prefersLargeTitles = true
