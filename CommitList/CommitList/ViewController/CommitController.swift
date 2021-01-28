@@ -8,18 +8,35 @@
 import UIKit
 
 class CommitController: UITableViewController {
-    let cellId = "cellId"
-
+    private let cellId = "cellId"
+    private var commitVMArr = [CommitViewModel]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.  
         setNavBar()
         setList()
+        requestData()
+    }
+    @objc fileprivate func requestData() {
+        Service.shared.getResults { [weak self] result in
+            switch result {
+            case .success(let res):
+                let arr: [CommitViewModel] = res.map({ return CommitViewModel(commit: $0)})
+                self?.commitVMArr = arr
+                DispatchQueue.main.async {
+                    self?.tableView.reloadData()
+                }
+                
+            case .failure(let error):
+                print(error)
+            }
+        }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 5
+        return commitVMArr.count
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! CommitCell
