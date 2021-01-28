@@ -29,5 +29,10 @@ class CommitListTests: XCTestCase {
             // Put the code you want to measure the time of here.
         }
     }
+    
+    func testCommitModelAndCommitVM() {
+        let cmit = CommitResult(sha: "sha111", commit: Commit(author: Author(name: "author222", date: "date2020"), message: "msg000"))
+        XCTAssertEqual(cmit.sha, "sha11")
+    }
 
 }

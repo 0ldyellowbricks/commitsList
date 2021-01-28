@@ -6,3 +6,18 @@
 //
 
 import Foundation
+
+struct CommitViewModel {
+    let auther: String
+    let sha: String
+    let message: String
+    let commitTime: String
+    
+    init(commit: CommitResult) {
+        self.message = commit.commit?.message ?? ""
+        self.sha = commit.sha ?? ""
+        self.commitTime = commit.commit?.author?.date ?? ""
+        self.auther = commit.commit?.author?.name ?? ""
+        
+    }
+}
