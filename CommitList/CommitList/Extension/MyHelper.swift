@@ -16,3 +16,5 @@ extension UIColor {
         return UIColor(red: r/255, green: g/255, blue: b/255, alpha: 1)
     }
 }
+
+let kScreenWitdh = UIScreen.main.bounds.width
