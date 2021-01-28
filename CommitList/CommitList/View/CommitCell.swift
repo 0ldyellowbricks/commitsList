@@ -8,7 +8,7 @@
 import UIKit
 
 class CommitCell: UITableViewCell {
-
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
