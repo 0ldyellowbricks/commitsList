@@ -26,7 +26,7 @@ class CommitController: UITableViewController {
         return cell
     }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 150
+        return 130
     }
     
     fileprivate func setNavBar() {

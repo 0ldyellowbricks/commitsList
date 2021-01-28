@@ -9,7 +9,7 @@ import UIKit
 
 class CommitCell: UITableViewCell {
     let msgLabel: UILabel = {
-        let lbl = UILabel(frame: CGRect(x: 10, y: 10, width: kScreenWitdh - 20, height: 30))
+        let lbl = UILabel(frame: CGRect(x: 10, y: 10, width: kScreenWitdh - 20, height: 60))
         lbl.numberOfLines = 0
         lbl.font = .boldSystemFont(ofSize: 16)
         lbl.backgroundColor = .blue
@@ -17,7 +17,7 @@ class CommitCell: UITableViewCell {
         return lbl
     }()
     let detailLabel: UILabel = {
-        let lbl = UILabel(frame: CGRect(x: 10, y: 50, width: kScreenWitdh - 20, height: 30))
+        let lbl = UILabel(frame: CGRect(x: 10, y: 80, width: kScreenWitdh - 20, height: 25))
         lbl.textColor = UIColor.rgb(r: 50, g: 199, b: 242)
         lbl.font = .systemFont(ofSize: 14)
         lbl.backgroundColor = .yellow
@@ -25,7 +25,7 @@ class CommitCell: UITableViewCell {
         return lbl
     }()
     let authorDateLabel: UILabel = {
-        let lbl = UILabel(frame: CGRect(x: 10, y: 90, width: kScreenWitdh - 20, height: 30))
+        let lbl = UILabel(frame: CGRect(x: 10, y: 105, width: kScreenWitdh - 20, height: 25))
         lbl.font = .systemFont(ofSize: 14)
         lbl.backgroundColor = .orange
         lbl.text = "1111111"
