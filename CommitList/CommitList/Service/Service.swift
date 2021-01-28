@@ -12,7 +12,9 @@ class Service {
     
     func getResults(completion: @escaping (Result<[CommitResult], ErrorMessage>) -> ()) {
         
-        let urlString = "https://api.github.com/repos/0ldyellowbricks/commitsList/commits"
+//        let urlString = "https://api.github.com/repos/0ldyellowbricks/commitsList/commits"
+        let urlString = "https://api.github.com/repos/SDWebImage/SDWebImage/commits"
+        
         guard let url = URL(string: urlString) else { return }
         
         URLSession.shared.dataTask(with: url) { (data, response, error) in

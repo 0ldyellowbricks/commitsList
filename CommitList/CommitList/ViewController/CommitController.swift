@@ -41,7 +41,7 @@ class CommitController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! CommitCell
         let commitVM = commitVMArr[indexPath.row]
-        
+        cell.cellCommitVM = commitVM
         return cell
     }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
