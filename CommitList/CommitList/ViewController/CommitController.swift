@@ -20,11 +20,14 @@ class CommitController: UITableViewController {
         requestData()
     }
     @objc fileprivate func requestData() {
-        Service.shared.getResults { [weak self] result in
+        Service.shared.getResults(page: page) { [weak self] result in
             switch result {
             case .success(let res):
                 let arr: [CommitViewModel] = res.map({ return CommitViewModel(commit: $0)})
-                self?.commitVMArr = arr
+                if self?.page == 1 {
+                    self?.commitVMArr.removeAll()
+                }
+                self?.commitVMArr += arr
                 DispatchQueue.main.async {
                     self?.tableView.reloadData()
                 }
