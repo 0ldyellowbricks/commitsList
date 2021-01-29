@@ -45,4 +45,10 @@ class CommitListTests: XCTestCase {
 //        XCTAssertEqual(convert, "01-28-2021")
 //    }
 
+    func testCombineDateDescription() {
+        let dateStr = "2021-01-27T18:53:30Z"
+        let commit = CommitResult(sha: "#123456", commit: Commit(author: Author(name: "authorA", date: dateStr), message: "left msg"))
+        let commitVM = CommitViewModel(commit: commit)
+        XCTAssertEqual(commitVM.author, "authorA") //XCTAssertEqual failed: ("authorA committed 1 days ago") is not equal to ("authorA")
+    }
 }

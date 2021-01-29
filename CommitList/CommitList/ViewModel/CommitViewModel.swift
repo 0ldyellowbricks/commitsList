@@ -27,16 +27,12 @@ struct CommitViewModel {
         
         var detailStr = " committed "
         if diffTime < 60 {
-            detailStr += "\(diffTime % 60) minutes ago"
-//            print("less than one hour")
+            detailStr += "\(diffTime % 60) minutes ago" 
         } else if diffTime < 60 * 24 {
             detailStr += "\(diffTime / 60) hours ago"
-//            print("less than one day")
         } else if diffTime < 60 * 24 * 30 {
             detailStr += "\(diffTime / (60 * 24)) days ago"
-//            print("--- days")
         } else {
-//            print("full date")
             detailStr += "on \(shortDate)"
         }
         
