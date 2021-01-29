@@ -31,7 +31,7 @@ extension String {
             return shortDateStr
         }
     }
-    func getDiff() -> Int {
+    func datesCompare() -> Int {
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .short

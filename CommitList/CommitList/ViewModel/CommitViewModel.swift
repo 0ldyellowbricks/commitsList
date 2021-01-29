@@ -23,17 +23,23 @@ struct CommitViewModel {
         let shortDate = self.commitTime.my_convertDateFormatter(fullDate: false)
         
         let fullDate = self.commitTime.my_convertDateFormatter(fullDate: true)
-        let diffTime = fullDate.getDiff()
+        let diffTime = fullDate.datesCompare()
+        
+        var detailStr = " committed "
         if diffTime < 60 {
-            print("less than one hour")
+            detailStr += "\(diffTime % 60) minutes ago"
+//            print("less than one hour")
         } else if diffTime < 60 * 24 {
-            print("less than one day")
+            detailStr += "\(diffTime / 60) hours ago"
+//            print("less than one day")
         } else if diffTime < 60 * 24 * 30 {
-            print("--- days")
+            detailStr += "\(diffTime / (60 * 24)) days ago"
+//            print("--- days")
         } else {
-            print("full date")
+//            print("full date")
+            detailStr += "on \(shortDate)"
         }
         
-        self.author = author
+        self.author = author + detailStr
     }
 }
