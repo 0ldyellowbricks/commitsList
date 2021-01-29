@@ -8,7 +8,7 @@
 import Foundation
 
 struct CommitViewModel {
-    let auther: String
+    let author: String
     let sha: String
     let message: String
     let commitTime: String
@@ -18,9 +18,22 @@ struct CommitViewModel {
         self.sha = commit.sha ?? ""
         self.commitTime = commit.commit?.author?.date ?? ""
         
-        let auther = commit.commit?.author?.name ?? ""
+        let author = commit.commit?.author?.name ?? ""
         
-        self.auther = auther + self.commitTime.my_convertDateFormatter()
-
+        let shortDate = self.commitTime.my_convertDateFormatter(fullDate: false)
+        
+        let fullDate = self.commitTime.my_convertDateFormatter(fullDate: true)
+        let diffTime = fullDate.getDiff()
+        if diffTime < 60 {
+            print("less than one hour")
+        } else if diffTime < 60 * 24 {
+            print("less than one day")
+        } else if diffTime < 60 * 24 * 30 {
+            print("--- days")
+        } else {
+            print("full date")
+        }
+        
+        self.author = author
     }
 }

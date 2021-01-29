@@ -13,8 +13,8 @@ class Service {
     func getResults(page: Int, completion: @escaping (Result<[CommitResult], ErrorMessage>) -> ()) {
         let parameter = "?page=\(page)&per_page=25"
         
-//        let urlString = "https://api.github.com/repos/0ldyellowbricks/commitsList/commits" + parameter
-        let urlString = "https://api.github.com/repos/SDWebImage/SDWebImage/commits" + parameter
+        let urlString = "https://api.github.com/repos/0ldyellowbricks/commitsList/commits" + parameter
+//        let urlString = "https://api.github.com/repos/SDWebImage/SDWebImage/commits" + parameter
         
         guard let url = URL(string: urlString) else { return }
         

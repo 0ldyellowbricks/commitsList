@@ -8,7 +8,7 @@
 import UIKit
 
 extension String {
-    func my_convertDateFormatter() -> String {
+    func my_convertDateFormatter(fullDate: Bool) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
         dateFormatter.timeZone = NSTimeZone(name: "UTC") as TimeZone?
@@ -20,16 +20,32 @@ extension String {
         }
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         dateFormatter.timeZone = NSTimeZone(name: "America/Los_Angeles") as TimeZone?
-        let commitTimeStamp = dateFormatter.string(from: convertedDate!)
+        let fullDateStr = dateFormatter.string(from: convertedDate!)
         
         dateFormatter.dateFormat = "MM-dd-yyyy"
-        let dateStr = dateFormatter.string(from: convertedDate!)
-//        let finalDate = getDiff(commitDate: commitTimeStamp,dateStr: dateStr)
-        return dateStr
+        let shortDateStr = dateFormatter.string(from: convertedDate!)
+        
+        if fullDate {
+            return fullDateStr
+        } else {
+            return shortDateStr
+        }
     }
-//    func getDiff(commitDate: String, dateStr: String) -> String {
-//
-//    }
+    func getDiff() -> Int {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .short
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        let currentTimeString = dateFormatter.string(from: Date())
+        dateFormatter.timeZone = TimeZone.init(identifier: "America/Los_Angeles")
+        let dateModel = dateFormatter.date(from: self)
+        let dateNow = dateFormatter.date(from: currentTimeString)
+        let timeModel = String.init(format: "%ld", Int(dateModel!.timeIntervalSince1970))
+        let timeNow = String.init(format: "%ld", Int(dateNow!.timeIntervalSince1970))
+        
+        let diffTime = (Int(timeNow)! - Int(timeModel)!) / 60
+        return diffTime
+    }
 }
 
 extension UIColor { 

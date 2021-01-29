@@ -12,7 +12,7 @@ class CommitCell: UITableViewCell {
         didSet {
             msgLabel.text = cellCommitVM.message
             detailLabel.text = cellCommitVM.sha
-            authorDateLabel.text = cellCommitVM.auther
+            authorDateLabel.text = cellCommitVM.author
         }
     }
     let msgLabel: UILabel = {
