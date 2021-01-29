@@ -31,7 +31,11 @@ struct CommitViewModel {
         } else if diffTime < 60 * 24 {
             detailStr += "\(diffTime / 60) hours ago"
         } else if diffTime < 60 * 24 * 30 {
-            detailStr += "\(diffTime / (60 * 24)) days ago"
+            if diffTime / (60 * 24) < 2 {
+                detailStr += "yesterday"
+            } else {
+                detailStr += "\(diffTime / (60 * 24)) days ago"
+            }
         } else {
             detailStr += "on \(shortDate)"
         }

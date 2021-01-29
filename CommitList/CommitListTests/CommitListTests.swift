@@ -50,5 +50,9 @@ class CommitListTests: XCTestCase {
         let commit = CommitResult(sha: "#123456", commit: Commit(author: Author(name: "authorA", date: dateStr), message: "left msg"))
         let commitVM = CommitViewModel(commit: commit)
         XCTAssertEqual(commitVM.author, "authorA") //XCTAssertEqual failed: ("authorA committed 1 days ago") is not equal to ("authorA")
+        // according github website here should be "yesterday" not "1 days ago"
+        
+        
+        // after add if else XCTAssertEqual failed: ("authorA committed yesterday") is not equal to ("authorA")
     }
 }

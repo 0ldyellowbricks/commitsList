@@ -62,8 +62,7 @@ class CommitController: UITableViewController {
         let maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height
         if maximumOffset - currentOffset <= 10.0 {
             page += 1
-            requestData()
-            print(page)
+            requestData() 
         }
     }
     @objc fileprivate func refresh() {
