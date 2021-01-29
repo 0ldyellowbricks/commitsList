@@ -17,7 +17,10 @@ struct CommitViewModel {
         self.message = commit.commit?.message ?? ""
         self.sha = commit.sha ?? ""
         self.commitTime = commit.commit?.author?.date ?? ""
-        self.auther = commit.commit?.author?.name ?? ""
         
+        let auther = commit.commit?.author?.name ?? ""
+        
+        self.auther = auther + self.commitTime.my_convertDateFormatter()
+
     }
 }

@@ -18,12 +18,18 @@ extension String {
             assert(false, "no date from string")
             return ""
         }
-//        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        dateFormatter.timeZone = NSTimeZone(name: "America/Los_Angeles") as TimeZone? 
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        dateFormatter.timeZone = NSTimeZone(name: "America/Los_Angeles") as TimeZone?
+        let commitTimeStamp = dateFormatter.string(from: convertedDate!)
+        
         dateFormatter.dateFormat = "MM-dd-yyyy"
         let dateStr = dateFormatter.string(from: convertedDate!)
+//        let finalDate = getDiff(commitDate: commitTimeStamp,dateStr: dateStr)
         return dateStr
     }
+//    func getDiff(commitDate: String, dateStr: String) -> String {
+//
+//    }
 }
 
 extension UIColor { 
