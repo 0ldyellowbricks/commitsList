@@ -8,7 +8,8 @@
 import UIKit
 
 class CommitCell: UITableViewCell {
-//    test for commit this file 
+    //    test for commit this cell
+    //    Jan 3 2022 add test for commit this cell
     var cellCommitVM: CommitViewModel! {
         didSet {
             msgLabel.text = cellCommitVM.message
