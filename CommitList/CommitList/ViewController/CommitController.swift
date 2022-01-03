@@ -19,6 +19,7 @@ class CommitController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         //    test for commit "CommitController" file
+        //    Jan 3 2022 add test for commit this CommitController
         print("test num =", testNum)
         
         
