@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4D6FC6342785492700033412 /* Tools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6FC6332785492700033412 /* Tools.swift */; };
 		4D7CB69725C35BA800B383A0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7CB69625C35BA800B383A0 /* AppDelegate.swift */; };
 		4D7CB69925C35BA800B383A0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7CB69825C35BA800B383A0 /* SceneDelegate.swift */; };
 		4D7CB69B25C35BA800B383A0 /* CommitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7CB69A25C35BA800B383A0 /* CommitController.swift */; };
@@ -41,7 +40,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		4D6FC6332785492700033412 /* Tools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tools.swift; sourceTree = "<group>"; };
 		4D7CB69325C35BA700B383A0 /* CommitList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CommitList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D7CB69625C35BA800B383A0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4D7CB69825C35BA800B383A0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -189,7 +187,6 @@
 			isa = PBXGroup;
 			children = (
 				4D8585BD25C36F18008D663D /* ErrorMSG.swift */,
-				4D6FC6332785492700033412 /* Tools.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -340,7 +337,6 @@
 				4D85859525C3617A008D663D /* MyHelper.swift in Sources */,
 				4D8585B525C3695B008D663D /* CommitViewModel.swift in Sources */,
 				4D85859D25C36212008D663D /* CommitCell.swift in Sources */,
-				4D6FC6342785492700033412 /* Tools.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
