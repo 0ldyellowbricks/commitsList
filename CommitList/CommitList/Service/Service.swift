@@ -10,7 +10,7 @@ import Foundation
 class Service {
     static let shared = Service()
     
-    func getResults(page: Int, completion: @escaping (Result<[CommitResult], ErrorMessage>) -> ()) {
+    func getResults(page: Int, completion: @escaping (Result<[CommitResult], ErrorMSG>) -> ()) {
         let parameter = "?page=\(page)&per_page=25"
         
         let urlString = "https://api.github.com/repos/0ldyellowbricks/commitsList/commits" + parameter
