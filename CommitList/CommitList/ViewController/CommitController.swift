@@ -8,14 +8,23 @@
 import UIKit
 
 class CommitController: UITableViewController {
-    private let cellId = "cellId"
+//    test for commit "CommitController" file
+    private let testNum = 1
+     
     
+    private let cellId = "cellId"
     private var commitVMArr = [CommitViewModel]()
     private var page = 1
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.  
+        //    test for commit "CommitController" file
+        //    Jan 3 2022 add test for commit this CommitController
+        print("test num =", testNum)
+        
+        
+        
+        // Do any additional setup after loading the view.
         setNavBar()
         setList()
         requestData() 
