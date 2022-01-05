@@ -15,7 +15,6 @@
 		4D7CB6AE25C35BAC00B383A0 /* CommitListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7CB6AD25C35BAC00B383A0 /* CommitListTests.swift */; };
 		4D7CB6B925C35BAC00B383A0 /* CommitListUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7CB6B825C35BAC00B383A0 /* CommitListUITests.swift */; };
 		4D85859525C3617A008D663D /* MyHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D85859425C3617A008D663D /* MyHelper.swift */; };
-		4D85859D25C36212008D663D /* CommitCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D85859C25C36212008D663D /* CommitCell.swift */; };
 		4D8585AE25C3672E008D663D /* CommitResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8585AD25C3672E008D663D /* CommitResult.swift */; };
 		4D8585B525C3695B008D663D /* CommitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8585B425C3695B008D663D /* CommitViewModel.swift */; };
 		4D8585BE25C36F18008D663D /* ErrorMSG.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8585BD25C36F18008D663D /* ErrorMSG.swift */; };
@@ -40,6 +39,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4D6FC63927854F2600033412 /* Test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Test.h; sourceTree = "<group>"; };
 		4D7CB69325C35BA700B383A0 /* CommitList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CommitList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D7CB69625C35BA800B383A0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4D7CB69825C35BA800B383A0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -54,7 +54,6 @@
 		4D7CB6B825C35BAC00B383A0 /* CommitListUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitListUITests.swift; sourceTree = "<group>"; };
 		4D7CB6BA25C35BAC00B383A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4D85859425C3617A008D663D /* MyHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyHelper.swift; sourceTree = "<group>"; };
-		4D85859C25C36212008D663D /* CommitCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitCell.swift; sourceTree = "<group>"; };
 		4D8585AD25C3672E008D663D /* CommitResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitResult.swift; sourceTree = "<group>"; };
 		4D8585B425C3695B008D663D /* CommitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitViewModel.swift; sourceTree = "<group>"; };
 		4D8585BD25C36F18008D663D /* ErrorMSG.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMSG.swift; sourceTree = "<group>"; };
@@ -154,7 +153,6 @@
 		4D85858F25C36040008D663D /* View */ = {
 			isa = PBXGroup;
 			children = (
-				4D85859C25C36212008D663D /* CommitCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -187,6 +185,7 @@
 			isa = PBXGroup;
 			children = (
 				4D8585BD25C36F18008D663D /* ErrorMSG.swift */,
+				4D6FC63927854F2600033412 /* Test.h */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -336,7 +335,6 @@
 				4D8585C725C36F98008D663D /* Service.swift in Sources */,
 				4D85859525C3617A008D663D /* MyHelper.swift in Sources */,
 				4D8585B525C3695B008D663D /* CommitViewModel.swift in Sources */,
-				4D85859D25C36212008D663D /* CommitCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
