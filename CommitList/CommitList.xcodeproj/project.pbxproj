@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4D1EF2B627DBB68A007950ED /* HelpTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1EF2B527DBB68A007950ED /* HelpTest.swift */; };
+		4D1EF2B827DBBC7C007950ED /* master.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1EF2B727DBBC7C007950ED /* master.swift */; };
 		4D7CB69725C35BA800B383A0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7CB69625C35BA800B383A0 /* AppDelegate.swift */; };
 		4D7CB69925C35BA800B383A0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7CB69825C35BA800B383A0 /* SceneDelegate.swift */; };
 		4D7CB69B25C35BA800B383A0 /* CommitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7CB69A25C35BA800B383A0 /* CommitController.swift */; };
@@ -42,6 +43,7 @@
 
 /* Begin PBXFileReference section */
 		4D1EF2B527DBB68A007950ED /* HelpTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpTest.swift; sourceTree = "<group>"; };
+		4D1EF2B727DBBC7C007950ED /* master.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = master.swift; sourceTree = "<group>"; };
 		4D7CB69325C35BA700B383A0 /* CommitList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CommitList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D7CB69625C35BA800B383A0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4D7CB69825C35BA800B383A0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -149,6 +151,7 @@
 			isa = PBXGroup;
 			children = (
 				4D7CB69A25C35BA800B383A0 /* CommitController.swift */,
+				4D1EF2B727DBBC7C007950ED /* master.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -333,6 +336,7 @@
 			files = (
 				4D1EF2B627DBB68A007950ED /* HelpTest.swift in Sources */,
 				4D7CB69B25C35BA800B383A0 /* CommitController.swift in Sources */,
+				4D1EF2B827DBBC7C007950ED /* master.swift in Sources */,
 				4D8585AE25C3672E008D663D /* CommitResult.swift in Sources */,
 				4D7CB69725C35BA800B383A0 /* AppDelegate.swift in Sources */,
 				4D7CB69925C35BA800B383A0 /* SceneDelegate.swift in Sources */,
