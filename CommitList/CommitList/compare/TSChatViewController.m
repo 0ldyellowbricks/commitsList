@@ -63,7 +63,8 @@
 #import "TSUserActionsManager.h"
 #import "TSUtilities+TeamsApp.h"
 #import "TSMessageInfo+Cards.h"
-#import "TSViewController+BrandIcon.h"
+#import <AXPCommonUI/TSViewController+BrandIcon.h>
+#import <TeamsAppCoreUtility/TeamsAppCoreUtility-Swift.h>
 #import "TeamSpaceApp+Settings.h"
 #import "UITextView+QuoteIndicator.h"
 #import "TSCompanionBannerViewManager.h"
@@ -93,14 +94,13 @@
 #import "TSPlatformBotsAuthManager.h"
 #import "ACRView+Refresh.h"
 #import "TeamSpaceApp-Swift.h"
-#import "TSEmptyStateView.h"
+#import <AXPCommon/TSEmptyStateConstants.h>
 #import "TSEmptyStateConfigurationFactoryProtocol.h"
-#import "TSInviteUtility.h"
 #import "TSMessageReactionView.h"
 #import "TSAllReactionsViewController.h"
 #import "TSCAdaptiveCardCache.h"
 #import "TSMeetingTabbedUXUtilities.h"
-#import "NSDictionary+DataBagValues.h"
+#import <TeamsAppCoreUtility/NSDictionary+DataBagValues.h>
 #import "SDKModuleUtilities.h"
 #import "TSBaseComposeViewController+Mentions.h"
 #import "TSMeetingCoordinator.h"
@@ -115,6 +115,7 @@
 #import "TSChatMessageLongPressHandler.h"
 #import "TSChatMessageLongPressProviderDelegate.h"
 #import "TSMessageLikersPopupController.h"
+#import <TeamsAppCoreUtility/UIView+Subview.h>
 
 #import <CallingKit/TSCallConsultTransferSession.h>
 #import <CallingKit/TSMeetingCallDetails.h>
@@ -132,9 +133,7 @@
 #import <SearchCore/TSPeoplePickerSearchProvider.h>
 #import <TeamsKit/TeamsKit-Swift.h>
 #import <GroupTemplates/GroupTemplates-Swift.h>
-#ifndef TEAMSAPP_SDK
 #import <MsgAnimations/MsgAnimations-Swift.h>
-#endif
 #import <TeamsKit/TSDLPEnums.h>
 #import <TeamsKit/TSDetailedBotCard.h>
 #import <TeamsKit/TSFileUploadManager.h>
@@ -393,7 +392,6 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
 @property (strong, nonatomic) TSPeoplePickerSearchProvider *peoplePickerSearchProvider;
 @property (strong, nonatomic) TSFluidPreviewCellPopUpActionsViewController *fluidPopupViewController;
 @property (strong, nonatomic) TSMessageLikersPopupController *messageLikersPopup;
-@property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic, strong) UIView *messagesView;
 @property (nonatomic) BOOL loadedWithViewPreservation;
 @property (nonatomic) BOOL errorContainerNotFound;
@@ -460,6 +458,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
 @property (strong, nonatomic) NSString *sourceSegueId;
 @property (nonatomic) BOOL isTabBarHidden;
 @property (nonatomic) BOOL forceShowBackButton;
+@property (nonatomic) BOOL createChatWithRecipientIDs;
 @property (strong, nonatomic) NSString *nativeFederationThreadID;
 @property (strong, nonatomic) NSString *previousFederationThreadID;
 @property (strong, nonatomic) NSString *navScenarioID;
@@ -493,6 +492,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
 @property (nonatomic) BOOL shouldShowEcryptionMessage;
 @property (nonatomic) BOOL isGuardiansChat;
 @property (nonatomic) BOOL isChatWithSelf;
+@property (nonatomic) BOOL isCreatingChatWithSelfThread;
 @property (nonatomic, strong) NSString *guardiansAadGroupId;
 @property (nonatomic, strong) NSString *guardiansUserId;
 @property (nonatomic, strong) NSArray<NSString *> *guardiansRecipientEmails;
@@ -505,7 +505,6 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
 
 @property (strong, nonatomic) NSDictionary *searchHighlightAttributes;
 @property (strong, nonatomic) NSDictionary *msgAnimationsHighlightAttributes;
-@property (nonatomic) CGFloat bottomConstant;
 @property (strong, nonatomic) NSDictionary<NSString *, NSNumber *> *allRecipientsConsumptionHorizons;
 @property (strong, nonatomic) NSDate *recipientLastSentMsgTime; // used for lastSeenAt for 1:1 chats
 
@@ -553,9 +552,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
 @property (strong, nonatomic) id<MessageStaticLocationCoordinatorBridge> staticLocationCoordinator;
 @property (strong, nonatomic) id<ChatLocationBannerCoordinatorBridge> locationBannerCoordinator;
 @property (strong, nonatomic) id<GroupLocationsLiveCoordinatorBridge> groupLocationsCoordinator;
-#ifndef TEAMSAPP_SDK
 @property (strong, nonatomic) id<MAAnimationCoordinatorBridge> mAnimationCoordinator;
-#endif
 @property (strong, nonatomic) TSMessageVaultItemCoordinatorBridge *vaultCoordinator;
 @property (strong, nonatomic) TSVideoMessagingCoordinatorBridge *videoMessagingCoordinator;
 @property (strong, nonatomic) TSMessageTasksItemCoordinatorBridge *tasksCoordinator;
@@ -566,6 +563,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
 
 // Semantic/Fluid Object
 @property (nonatomic) BOOL isFluidObjectEnabled;
+@property (nonatomic) BOOL isFluidObject;//11235813
 @property (strong, nonatomic) NSMutableDictionary<NSString *, TSSemanticListModel *> *semanticObjectListModels;
 @property (strong, nonatomic) TSFluidComponentService *fluidService;
 
@@ -660,11 +658,14 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
 @property (strong, nonatomic) TSSmartReplyCell *smartReplyCell;
 
 @property (strong, nonatomic) NSString *chatRenderScenarioId;
+@property (strong, nonatomic) GradientObject *bubbleGradient;
+
 @property (strong, nonatomic) TSChatTranscriptViewModel *transcriptViewModel;
 @property (strong, nonatomic) TSFluidTablePreviewCellHandlerInChat *fluidTablePreviewCellHandler;
 
 @property (nonatomic, strong) id<MessageExtensionDiscoverabilityService> discoverabilityService;
-
+// loading indicator flag
+@property (nonatomic, assign) BOOL isLoadingIndicatorInChatEnabled;
 @end
 
 @implementation TSChatViewController
@@ -810,12 +811,13 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     self.videoMessagingCoordinator = nil;
     self.messageFetchEngine = nil;
     self.tasksCoordinator = nil;
-    self.activitySpinnerWithText.hidden = YES;
-    [self.activitySpinnerWithText removeFromSuperview];
-    self.activitySpinnerWithText = nil;
-#ifndef TEAMSAPP_SDK
+    if (self.isLoadingIndicatorInChatEnabled)
+    {
+        self.activitySpinnerWithText.hidden = YES;
+        [self.activitySpinnerWithText removeFromSuperview];
+        self.activitySpinnerWithText = nil;
+    }
     self.mAnimationCoordinator = nil;
-#endif
     
     self.translationIntelligentSuggestionsCoordinator = nil;
     
@@ -946,6 +948,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
         self.initiateChatWithTBot = viewInfo[@"initiateChatWithTBot"];
         self.chatWithTBot = viewInfo[@"chatWithTBot"];
         self.groupChatCreationState = [viewInfo[TSkGroupChatCreationStateKey] intValue] ?: TSGroupChatCreationStateNoOp;
+        self.createChatWithRecipientIDs = [viewInfo[TSkCreateChatWithRecipientIDs] boolValue];
         self.isMultiSelectParticipantsInProgress = NO;
         self.userSearchResultItem = viewInfo[@"TSEntitySearchResultItem"];
         self.hideCallOptions = [self.accountHandle.policyManager isCallingAllowed] ? [viewInfo[@"hideCallOptions"] boolValue] : YES;
@@ -1047,24 +1050,28 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     
     // NOTE: there are UI specific logic(meeting banner view in particular) in the setter of threadID,
     // make sure you set necessary flags such as didAnonJoinCallEnd before setting it.
+    self.isChatWithSelf = [threadID isEqualToString:TSkChatWithSelfThreadID];
     self.threadID = threadID;
-    self.isChatWithSelf = [self.threadID isEqualToString:TSkChatWithSelfThreadID];
     self.sourceSegueId = viewInfo[TSkSegueId];
+    self.sessionId = viewInfo[TSkSessionId] ?: [[NSUUID UUID] UUIDString];
     
-    TSMeetingInfo *meetingInfo = [[TSMeetingInfo alloc] initWithJson:(NSDictionary *)self.thread.meeting];
-    self.transcriptViewModel = [self buildTranscriptViewModelWithMeetingInfo:meetingInfo];
-    TSWeakify(self)
-    self.transcriptViewModel.onTranscriptDownloaded = ^(NSString *filePath, UIView *view) {
-        TSStrongifyAndReturnIfNil(self)
-        if ([NSString isNilOrEmpty:filePath])
-        {
-            [self showToastViewWithTitle:AXPLocalizedString(@"FailedToDownload")];
-            return;
-        }
-        NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
-        // fromView is only used for iPad
-        [TSFileUtility shareData:@[fileUrl] fromView:view viewController:self withModuleName:TSkActionModuleContextMenuOptions logger: self.accountHandle.logger];
-    };
+    if (self.accountHandle.ecsManager.isTranscriptFeatureEnabledOnECS)
+    {
+        TSMeetingInfo *meetingInfo = [[TSMeetingInfo alloc] initWithJson:(NSDictionary *)self.thread.meeting];
+        self.transcriptViewModel = [self buildTranscriptViewModelWithMeetingInfo:meetingInfo];
+        TSWeakify(self)
+        self.transcriptViewModel.onTranscriptDownloaded = ^(NSString *filePath, UIView *view) {
+            TSStrongifyAndReturnIfNil(self)
+            if ([NSString isNilOrEmpty:filePath])
+            {
+                [self showToastViewWithTitle:AXPLocalizedString(@"FailedToDownload")];
+                return;
+            }
+            NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
+            // fromView is only used for iPad
+            [TSFileUtility shareData:@[fileUrl] fromView:view viewController:self withModuleName:TSkActionModuleContextMenuOptions logger: self.accountHandle.logger];
+        };
+    }
 
     if (self.isNewFederatedUser)
     {
@@ -1109,6 +1116,10 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     if ([self.threadID length])
     {
         thread = [AXPCtx threadForID:self.threadID inMoc:self.accountHandle.mainMOC];
+        if (self.isChatWithSelf && !thread)
+        {
+            self.isCreatingChatWithSelfThread = YES;
+        }
         
         // Have self.threadID for a thread that hasn't synced yet. Tapped a notification, etc.  Sync and retry
         // If this view is for chat with self, do not retry for ThreadNotFound, and continue as a valid scenario
@@ -1230,6 +1241,11 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
         [self.toView setHidden:YES];
     }
     
+    if (self.isChatWithSelf && self.toViewController != nil)
+    {
+        [self hideToContainerAndShowOuterViewTabs];
+    }
+    
     // Need to pick up Video URLs included in the ImageDatas key
     if (self.threadID && viewInfo[TSkImageDatasKey])
     {
@@ -1261,7 +1277,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
         [[NSNotificationCenter defaultCenter] postNotificationName:TSkMTMAShowToast object:nil];
     }
 
-	[self checkLogTelemetryForBotChatLoad];
+    [self checkLogTelemetryForBotChatLoad];
 
     BOOL useFlowV2 = self.shouldUseFlowV2
         && !self.isGroupTemplateChat
@@ -1281,7 +1297,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
 
 -(void)dismissEcryptionMessageView
 {
-	self.heightEncryptionView.constant = 0.0f;
+    self.heightEncryptionView.constant = 0.0f;
 }
 
 - (void)willNavigateChatThreadNotFound:(NSDictionary *)viewInfo
@@ -1655,7 +1671,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
         if ([resolvedTitle isEqualToString:AXPLocalizedString(@"UnknownUser")])
         {
             // When creating a 1-1 SMS chat, the UI is shown before the display name is updated in roster.
-            // To avoid briefly showing the Chat placeholder, we show the display name that we've sent to the server. 
+            // To avoid briefly showing the Chat placeholder, we show the display name that we've sent to the server.
             if ([self.fallbackDisplayName isNotNilOrEmpty])
             {
                 return self.fallbackDisplayName;
@@ -1976,6 +1992,8 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     
     LogInfoAH(self.accountHandle.logger, @"viewDidLoad %@", self.threadID);
     
+    [self updateBubbleColors];
+    
     self.shouldUseFlowV2 = self.accountHandle.policyManager.isGroupCreationFlowV2Enabled;
     self.shouldMultiSelectParticipants = self.accountHandle.policyManager.isGroupCreationMultiSelectEnabled || self.shouldUseFlowV2;
     self.dynamicDecorationType = self.accountHandle.ecsManager.chatBubbleDecorationType;
@@ -1989,15 +2007,17 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     self.emptyStateView.newGroupWelcomeScreenType = self.accountHandle.ecsManager.newGroupWelcomeScreenType;
     self.emptyStateView.isGroupTemplatesEnabled = [self.accountHandle.policyManager isGroupCreationWithTemplatesEnabled];
     self.emptyStateView.isUntitledGroupAllowed = self.accountHandle.ecsManager.isUntitledNewGroupAllowed;
-	
-	if (self.shouldShowEcryptionMessage) {
-		self.heightEncryptionView.constant = TSkEncryptionViewMessageHeight;
-		self.encryptionMessageView.showShowEncryptionMessageView = true;
-		[self.encryptionMessageView setup];
-		self.encryptionMessageView.encryptionMessageViewDelegate = self;
-	} else {
-		self.heightEncryptionView.constant = TSkTypingIndicatorViewMinimumHeight;
-	}
+    // loading indicator flag
+    self.isLoadingIndicatorInChatEnabled = [self.accountHandle.policyManager isLoadingIndicatorInChatEnabled];
+    
+    if (self.shouldShowEcryptionMessage) {
+        self.heightEncryptionView.constant = TSkEncryptionViewMessageHeight;
+        self.encryptionMessageView.showShowEncryptionMessageView = true;
+        [self.encryptionMessageView setup];
+        self.encryptionMessageView.encryptionMessageViewDelegate = self;
+    } else {
+        self.heightEncryptionView.constant = TSkTypingIndicatorViewMinimumHeight;
+    }
 
     self.hasUnreadMessages = NO;
 
@@ -2205,7 +2225,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
         self.toContainerViewHeight.constant = 0;
         [self startActivityIndicator];
     }
-    else if ((!self.recipientIDs && !self.emptyStateForMeetings) || self.groupChatCreationState == TSGroupChatCreationStateInChatWithCompose || isNewGuardiansChat)
+    else if (isNewGuardiansChat || [self shouldAddToViewControllerAsChild])
     {
         self.toViewController.toControlDelegate = self;
         self.toViewController.hidesBottomBarWhenPushed = self.hidesBottomBarWhenPushed;
@@ -2301,7 +2321,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     [self.tableView registerNib:[UINib nibWithNibName:TSkNibNameChatRecordingCardViewCell bundle:[NSBundle bundleForClass:[self class]]] forCellReuseIdentifier:TSkNibNameChatRecordingCardViewCell];
     [self.tableView registerNib:[UINib nibWithNibName:TSkNibNameChatGroupTimestampCell bundle:[NSBundle bundleForClass:[self class]]] forCellReuseIdentifier:TSkNibNameChatGroupTimestampCell];
     [self.tableView registerNib:[UINib nibWithNibName:TSkNibNameSmartReplyCell bundle:[NSBundle bundleForClass:[self class]]] forCellReuseIdentifier:TSkNibNameSmartReplyCell];
-    [self.tableView registerNib:[UINib nibWithNibName:TSFluidTablePreviewCell.reuseIdentifier bundle:[NSBundle bundleForClass:[self class]]] forCellReuseIdentifier:TSFluidTablePreviewCell.reuseIdentifier];
+//    [self.tableView registerNib:[UINib nibWithNibName:TSFluidTablePreviewCell.reuseIdentifier bundle:[NSBundle bundleForClass:[self class]]] forCellReuseIdentifier:TSFluidTablePreviewCell.reuseIdentifier];//11235813
     [self.tableView registerClass:TSRetentionPolicyMessageViewCell.class forCellReuseIdentifier:TSRetentionPolicyMessageViewCell.reuseIdentifier];
     [self.tableView registerClass:TSChatConsumptionHorizonUsersCell.class forCellReuseIdentifier:TSkNibNameConsumptionHorizonCell];
     
@@ -2384,7 +2404,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     
     [self updateUnreadIndicatorConstraintsPinnedToBottomView:self.composeView];
     
-	[self checkLogTelemetryForBotChatLoad];
+    [self checkLogTelemetryForBotChatLoad];
 
     // Install custom accessibiity rotor to allow swipe up/down navigation between group timestamp cells
     __weak typeof(self) weakSelf = self;
@@ -3196,7 +3216,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     self.canRemoveConsultTransferCallSession = YES;
 }
 
-- (void)resolveThreadAndPlaceCallWithVideo:(BOOL)isSendingLocalVideo
+- (void)resolveThreadAndPlaceCallWithVideo:(BOOL)isSendingLocalVideo callUUID:(NSUUID *)callUUID
 {
     if (self.threadType == TSThreadTypeUnknown)
     {
@@ -3237,17 +3257,17 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
             [TSDispatchUtilities dispatchOnMainThread:^{
                 __strong typeof (self) strongSelf = weakSelf;
                 [strongSelf updateThreadInfo];
-                [strongSelf placeCallWithVideo:isSendingLocalVideo];
+                [strongSelf placeCallWithVideo:isSendingLocalVideo newCallUUID:callUUID];
             }];
         }];
     }
     else
     {
-        [self placeCallWithVideo:isSendingLocalVideo];
+        [self placeCallWithVideo:isSendingLocalVideo newCallUUID:callUUID];
     }
 }
 
-- (void)placeCallWithVideo:(BOOL)isSendingLocalVideo
+- (void)placeCallWithVideo:(BOOL)isSendingLocalVideo newCallUUID:(NSUUID *)newCallUUID
 {
     NSString *scenarioName = self.threadType == TSThreadTypeGroupChat ? SCENARIO_CALL_PLACE_GROUP_CALL : [self placeOneToOneCallScenarioName];
     
@@ -3306,7 +3326,9 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
                                panelUri:TSkPanelUriCalling
                          panelUriParams:nil
                                threadId:self.threadID
-                             threadType:self.call.callType == TSPSTNCall ? TSkThreadTypePSTN : TSkThreadTypeOneOnOneChat];
+                             threadType:self.call.callType == TSPSTNCall ? TSkThreadTypePSTN : TSkThreadTypeOneOnOneChat
+                               callType:[TSCallUtilities biCallTypeStringForCall:self.call]
+                                 callId:self.call.initialUUIDString];
             
             [TSCallManager sharedInstance].consultTransferCallSession.type = TSConsultTransferTypeCall;
         }
@@ -3321,6 +3343,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
                                                   isVoicemail:NO
                                                 accountHandle:self.accountHandle
                                                      animated:YES
+                                                      callUUID:newCallUUID
                                                    completion:nil];
     
 }
@@ -3370,6 +3393,16 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
 - (BOOL)isSimpleSearchBarVisible
 {
     return !self.toViewController.simpleSearchBarContainerView.hidden;
+}
+
+- (BOOL)shouldAddToViewControllerAsChild
+{
+    if (self.groupChatCreationState == TSGroupChatCreationStateInChatWithCompose)
+    {
+        return YES;
+    }
+    
+    return (!self.recipientIDs && !(self.emptyStateForMeetings || self.isChatWithSelf));
 }
 
 - (void)logTelemetryForNextButtonTapWithModuleName:(NSString *)moduleName
@@ -3739,7 +3772,8 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
 {
     [TSDispatchUtilities dispatchOnMainThread:^{
         __block NSMutableDictionary *dataBagValues = [[NSMutableDictionary alloc] initWithDictionary:@{
-            TSkType: TSkChatMsgSendTypeRegular
+            TSkType: TSkChatMsgSendTypeRegular,
+            TSkSessionId: self.sessionId
         }];
         
         if (self.accountHandle.policyManager.isGroupCreationWithTemplatesEnabled)
@@ -4508,29 +4542,29 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
                                                     viewController:self
                                                      accountHandle:self.accountHandle];
             }
-            else if ([cell isKindOfClass:TSFluidTablePreviewCell.class])
-            {
-                NSDictionary *itemData = [self dataForRowAtIndexPath:path inTableView:self.tableView];
-                TSMessageInfo *messageInfo = [self messageFromItemData:itemData];
-                CGFloat fluidHeaderHeight = [messageInfo.isSentByMe boolValue] ? TSkFluidPreviewHeaderSentByMeHeight : TSkFluidPreviewHeaderHeight;
-                CGPoint locationInCell = [recognizer locationInView:cell];
-                
-                CGFloat locationMaxHeight = [self.tableView rectForRowAtIndexPath:path].size.height;
-                if (messageInfo.reactionsSummary > 0)
-                {
-                    CGFloat reactionViewHeight = 30.0;
-                    locationMaxHeight -= reactionViewHeight;
-                }
-                
-                if (locationInCell.y >= fluidHeaderHeight && locationInCell.y < locationMaxHeight)
-                {
-                    TSFluidTablePreviewCell *fluidPreviewCell = (TSFluidTablePreviewCell *)cell;
-                    CGPoint locationInCellCardView = [recognizer locationInView:fluidPreviewCell.fluidCardView];
-                    if (locationInCellCardView.x > 0 && locationInCellCardView.x < fluidPreviewCell.fluidCardView.bounds.size.width) {
-                        [self didPressedFluidTablePreviewCellWith:self.fluidService messageInfo:messageInfo inEditMode:NO];
-                    }
-                }
-            }
+//            else if ([cell isKindOfClass:TSFluidTablePreviewCell.class])
+//            {
+//                NSDictionary *itemData = [self dataForRowAtIndexPath:path inTableView:self.tableView];
+//                TSMessageInfo *messageInfo = [self messageFromItemData:itemData];
+//                CGFloat fluidHeaderHeight = [messageInfo.isSentByMe boolValue] ? TSkFluidPreviewHeaderSentByMeHeight : TSkFluidPreviewHeaderHeight;
+//                CGPoint locationInCell = [recognizer locationInView:cell];
+//
+//                CGFloat locationMaxHeight = [self.tableView rectForRowAtIndexPath:path].size.height;
+//                if (messageInfo.reactionsSummary > 0)
+//                {
+//                    CGFloat reactionViewHeight = 30.0;
+//                    locationMaxHeight -= reactionViewHeight;
+//                }
+//
+//                if (locationInCell.y >= fluidHeaderHeight && locationInCell.y < locationMaxHeight)
+//                {
+//                    TSFluidTablePreviewCell *fluidPreviewCell = (TSFluidTablePreviewCell *)cell;
+//                    CGPoint locationInCellCardView = [recognizer locationInView:fluidPreviewCell.fluidCardView];
+//                    if (locationInCellCardView.x > 0 && locationInCellCardView.x < fluidPreviewCell.fluidCardView.bounds.size.width) {
+//                        [self didPressedFluidTablePreviewCellWith:self.fluidService messageInfo:messageInfo inEditMode:NO];
+//                    }
+//                }
+//            }
             else if (UIAccessibilityIsVoiceOverRunning() && cell && [cell isKindOfClass:TSRetentionPolicyMessageViewCell.class])
             {
                 [(TSRetentionPolicyMessageViewCell *) cell openInfoUrl];
@@ -4737,15 +4771,15 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
                         [self openPopupForMessageAtPath:path withBaseView:recordingMessageCell.recordingThumbnail];
                     }
                 }
-                else if ([cell isKindOfClass:TSFluidTablePreviewCell.class])
-                {
-                    TSFluidTablePreviewCell *fluidCell = (TSFluidTablePreviewCell *)cell;
-                    CGRect messageViewRect = [fluidCell.fluidCardView convertRect:fluidCell.fluidCardView.bounds toView:self.tableView];
-                    if (CGRectContainsPoint(messageViewRect, rowLocation))
-                    {
-                        [self openPopupForMessageAtPath:path withBaseView:fluidCell.contentView];
-                    }
-                }
+//                else if ([cell isKindOfClass:TSFluidTablePreviewCell.class])
+//                {
+//                    TSFluidTablePreviewCell *fluidCell = (TSFluidTablePreviewCell *)cell;
+//                    CGRect messageViewRect = [fluidCell.fluidCardView convertRect:fluidCell.fluidCardView.bounds toView:self.tableView];
+//                    if (CGRectContainsPoint(messageViewRect, rowLocation))
+//                    {
+//                        [self openPopupForMessageAtPath:path withBaseView:fluidCell.contentView];
+//                    }
+//                }
             }
         }
     }
@@ -4833,7 +4867,8 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     [TSDispatchUtilities dispatchOnMainThread:^{
         TSSMessage *message = [AXPCtx messageForID:info.tsID andThreadID:info.threadID];
         NSInteger seenByCount = [self getSeenByCountForMessage:message.ts_numericArrivalTime];
-        NSString *seenByList = [self getSeenByList:message seenByCount:seenByCount totalCount:totalRecipientCount];
+        NSString *seenByList = self.accountHandle.policyManager.shouldShowReadByInContextMenuForAllMessage ?
+                               [self getSeenByList:message seenByCount:seenByCount totalCount:totalRecipientCount] : @"";
         NSDictionary *rrParams = @{
             TSkReadReceiptSeenByCountKey : @(seenByCount),
             TSkReadReceiptTotalRecipientsCountKey : @(totalRecipientCount),
@@ -4989,7 +5024,14 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     
     if (self.groupChatCreationState == TSGroupChatCreationStateInChatWithCompose)
     {
-        [self.toViewController initiateGroupChatWithUser:self.userSearchResultItem];
+        if (self.createChatWithRecipientIDs && self.recipientIDs.count > 0)
+        {
+            [self.toViewController initiateGroupChatWithRecipientIDs:self.recipientIDs];
+        }
+        else
+        {
+            [self.toViewController initiateGroupChatWithUser:self.userSearchResultItem];
+        }
         self.groupChatCreationState = TSGroupChatCreationStateNoOp;
     }
     
@@ -5038,6 +5080,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     
     if (self.needToRegisterForNotifications)
     {
+        [self addObserverToNotificationCenterForNotificationName:TSkConversationDeleted selector:@selector(conversationDeleted:)];
         [self addObserverToNotificationCenterForNotificationName:UIApplicationDidBecomeActiveNotification selector:@selector(appDidBecomeActive:)];
         [self addObserverToNotificationCenterForNotificationName:TSkCallingEnabledUpdated selector:@selector(callingEnabledConfigurationChanged:)];
         [self addObserverToNotificationCenterForNotificationName:TSkGroupCallingEnabledUpdated selector:@selector(callingEnabledConfigurationChanged:)];
@@ -5145,6 +5188,9 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
         [self.navigationController.navigationBar.standardAppearance setShadowColor:StylesheetManager.S.ElementColor.divider];
         [self.navigationController.navigationBar.scrollEdgeAppearance setShadowColor:StylesheetManager.S.ElementColor.divider];
     }
+    
+    [self updateBubbleColors];
+    [self applyDynamicDecorationIfNeeded];
 }
 
 - (void)removeButtonsForInteropThreadIfNeeded
@@ -5363,7 +5409,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
                                                                        TSkCallingEnabledUpdated, TSkGroupCallingEnabledUpdated, TSkPrivateMeetingEnabledUpdated,
                                                                        TSkVideoCallingEnabledUpdated, TSkACImageDownloadNotification, UIApplicationWillResignActiveNotification,
                                                                        TSkPageOneChatsConversationsThreadsAndUsersSynced, TSkControlTypingMessageReceivedNotification, TSkSSOAuthMessageReceivedNotification, TSkOneConversationSynced,
-                                                                       TSkChatBadgeCountChangedNotification, TSkNavigateAwayFromCall, TSkFederatedUsersSynced, TSkConversationMarkedUnread]];
+                                                                       TSkChatBadgeCountChangedNotification, TSkNavigateAwayFromCall, TSkFederatedUsersSynced, TSkConversationMarkedUnread, TSkConversationDeleted]];
     
     if (!IS_IPAD())
     {
@@ -5457,6 +5503,15 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
         if ([conv isDeleted])
         {
             [self stopActivityIndicator];
+        }
+        else if (!conv)
+        {
+            TSThread *thread = [AXPCtx threadForID:self.threadID];
+            if (!thread)
+            {
+                // Chat has been deleted
+                [self backButtonTapped:nil];
+            }
         }
     }
     
@@ -6681,6 +6736,16 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
 
 #pragma mark - TSComposeViewControllerDelegate
 
+- (BOOL) isCortanaDictationSupported
+{
+    return YES;
+}
+
+- (BOOL) shouldUseSoundWaveRecordingIcon
+{
+    return YES;
+}
+
 - (UIFontTextStyle) fontTextStyleForComposeViewController:(TSBaseComposeViewController *__nullable)composeViewController
 {
     return [TSFont defaultComposeBoxFontTextStyleForChats];
@@ -7560,7 +7625,8 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     }
     
     __block NSMutableDictionary *dataBagValues = [[NSMutableDictionary alloc] initWithDictionary:@{
-        TSkType: [composeInfo objectForKey:TSkAudioId] ? TSkChatMsgSendTypeAudio : TSkChatMsgSendTypeRegular
+        TSkType: [composeInfo objectForKey:TSkAudioId] ? TSkChatMsgSendTypeAudio : TSkChatMsgSendTypeRegular,
+        TSkSessionId: self.sessionId
     }];
     
     BOOL isNewThread = (self.thread == nil);
@@ -8183,7 +8249,6 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     //Scenario: User sending a card/multiple cards
     if (message.ts_botCardData != nil) {
         //Exclude this when compiling the SDK, build fails as the SDK excludes cards.
-#if !TEAMSAPP_SDK
         NSArray *botCards = [TSUtilities unarchiveBotCards:message.ts_botCardData];
         //If the message has one or more cards sent by a user we log card telemetry for each card.
         for (id cardInfo in botCards)
@@ -8217,8 +8282,6 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
                                             dataBagValues:cardDataBag];
             
         }
-#endif
-        
     }
     //Scenario: Bot sending a text message to user - we are logging bot metadata
     //Scenario: User sending a plain text to bot - we are logging bot metadata
@@ -8631,9 +8694,10 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
             completion(nil, messageUniqueKey.messageID, messageUniqueKey.threadID, scenarioID, correlationID);
         }
         
-        if (!weakSelf.threadID)
+        if (!weakSelf.threadID || self.isCreatingChatWithSelfThread)
         {
             [weakSelf initializeNewConversationPageForThreadID:messageUniqueKey.threadID];
+            self.isCreatingChatWithSelfThread = NO;
         }
         
         [TSDispatchUtilities dispatchOnBackgroundThread:^{
@@ -8961,6 +9025,11 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     return !self.didAnonJoinCallEnd;
 }
 
+- (BOOL) composeViewControllerShouldShowCalendarButton:(TSBaseComposeViewController *)composeViewController;
+{
+    return YES;
+}
+
 #pragma mark - TSToViewControllerDelegate
 
 - (TSSearchParameters *)getSearchParametersForResults
@@ -9039,6 +9108,31 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     [self.view layoutIfNeeded];
 }
 
+
+- (void) hideToContainerAndShowOuterViewTabs
+{
+    if (!fequal(self.toContainerViewHeight.constant, 0.0f))
+    {
+        __weak TSChatViewController* weakSelf = self;
+        [TSDispatchUtilities dispatchOnMainThread:^{
+            
+            if ([weakSelf.threadID isNotNilOrEmpty])
+            {
+                [weakSelf.outerViewController didReceiveThreadID:weakSelf.threadID withThreadType:weakSelf.biThreadType chatType:weakSelf.biChatType];
+            }
+            
+            [UIView animateWithDuration:0.25
+                                  delay:0.0
+                                options:UIViewAnimationOptionCurveEaseInOut
+                             animations:^{
+                                            weakSelf.toContainerViewHeight.constant = 0;
+                                            [weakSelf.toView setHidden:YES];
+                                        }
+                             completion:nil];
+        }];
+    }
+}
+
 - (TSSearchParameters *)searchParams
 {
     if(!_searchParams)
@@ -9068,20 +9162,20 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
         [self.entitySearch cancelPendingSearch];
     }
     
-    NSString* userMri = self.accountHandle.MRI;
-    NSArray<NSString *> *entityIDsToOmit  = nil;
-    if ([userMri isNotNilOrEmpty])
+    NSMutableArray<NSString *> *entityIDsToOmit  = (self.recipientIDs.count) ? self.recipientIDs.mutableCopy : NSMutableArray.new;
+    // If ToVC has no recipients and chat with self is enabled, do not add userMri to list of IDs to omit
+    if (![self.accountHandle.ecsManager isChatWithSelfEnabled] || self.recipientIDs.count > 0)
     {
-        entityIDsToOmit = (self.recipientIDs.count) ? [self.recipientIDs arrayByAddingObject:userMri] : @[userMri];
-    }
-    else
-    {
-        LogWarningAH(self.logger, @"Empty User MRI found in recipient search for chat view controller");
-        entityIDsToOmit = (self.recipientIDs.count) ? self.recipientIDs : NSArray.new;
+        NSString* userMri = self.accountHandle.MRI;
+        [entityIDsToOmit addObjectIfNotNil:userMri];
+        
+        if ([NSString isNilOrEmpty:userMri])
+        {
+            LogWarningAH(self.logger, @"Empty User MRI found in recipient search for chat view controller");
+        }
     }
     
-    NSMutableArray<NSString *> *finalOmitIDs = [NSMutableArray arrayWithArray:entityIDsToOmit];
-    [finalOmitIDs addObjectsFromArray:IDsToOmit];
+    [entityIDsToOmit addObjectsFromArray:IDsToOmit];
     
     // If no recipients selected, can search for users or group chats or tags
     // Once any are selected (which must be a User to continue searching) limit to User
@@ -9125,7 +9219,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     if ([self.accountHandle.ecsManager newPeoplePickerEnabled])
     {
         self.searchParams.types = searchResultTypes;
-        self.searchParams.omittingEntityIDs = finalOmitIDs;
+        self.searchParams.omittingEntityIDs = entityIDsToOmit;
         self.searchParams.showTflInterOpUsers = self.accountHandle.policyManager.isTfwTflFedChatCreationOnTfwEnabled;
         if ([self.accountHandle.policyManager DLsInAddToChatEnabled])
         {
@@ -9142,7 +9236,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
         [self.entitySearch searchEntities:searchTerm
                                   ofTypes:searchResultTypes
                            searchUserType:TSkSearchUserTypeChat
-                        omittingEntityIDs:finalOmitIDs
+                        omittingEntityIDs:entityIDsToOmit
                             includeOnline:YES
                                  chatMode:NO
                         showConnectorBots:NO
@@ -9223,7 +9317,19 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
         return;
     }
     
+    if (recipientIDs.count == 1 && [self.accountHandle.MRI isEqualToString:recipientIDs.firstObject] && [self.accountHandle.ecsManager isChatWithSelfEnabled])
+    {
+        [self willNavigateToView:@{
+            TSkEntryPoint : self.scenarioEntryPoint ?: @"",
+            TSkThreadID : TSkChatWithSelfThreadID
+        }];
+        
+        return;
+    }
+    
     [self willNavigateToView:@{
+        TSkOnUpdateNavigationBar: TSkOnUpdateNavigationBarNotification,
+        TSkDeepLinkedInitializationText: self.textForDeepLinkedInitialization ?: @"",
         TSkRecipientIDs: recipientIDs,
         TSkEntryPoint: self.scenarioEntryPoint ?: @"",
         TSkTopicName: self.topicName ?: @"",
@@ -9507,7 +9613,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     BOOL isPreviousConversationMessage = NO;
     BOOL isUpdateToTeamsMessage = NO;
     BOOL isConversationContinuesMessage = NO;
-    BOOL isFluidObject = NO;
+//    BOOL isFluidObject = NO;//11235813
     BOOL isMeetingMessage = NO;
     BOOL isRetentionPolicyMessage = NO;
     BOOL isTranscriptMessage = NO;
@@ -9589,7 +9695,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
         isPreviousConversationMessage = [messageInfo isPreviousConversationMessage];
         isRetentionPolicyMessage = [messageInfo isRetentionPolicyMessage];
         isTranscriptMessage = [messageInfo isTranscriptMessage];
-        isFluidObject = self.isFluidObjectEnabled && [self.fluidService isFluidMessageWithInfo:messageInfo
+        self.isFluidObject = self.isFluidObjectEnabled && [self.fluidService isFluidMessageWithInfo:messageInfo
                                                                                  messageEntity:messageEntity
                                                                                    fromAccount:self.accountHandle];
         
@@ -9745,19 +9851,20 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
             [[(TSNativeFederationChatCell *)cell button] addGestureRecognizer:gesture];
         }
     }
-    else if (isFluidObject)
-    {
-        TSFluidTablePreviewCell *fluidTableCell = [self.fluidService getCell:messageInfo
-                                                               messageEntity:messageEntity
-                                                                chatDelegate:self.fluidTablePreviewCellHandler];
-        // because you have model here
-        if (fluidTableCell != nil) {
-            fluidTableCell.canReplyToChat = [self shouldAllowReplyToChat];
-            fluidTableCell.canQuoteMessage = [self canQuoteMessageID:messageInfo.tsID];
-            [fluidTableCell start:self.accountHandle];
-            cell = fluidTableCell;
-        }
-    }
+//    else if (isFluidObject)
+//    {
+//        id<TSFluidTablePreviewCellDelegate> fluidTablePreviewCellDelegate = [self.fluidTablePreviewCellHandler conformsToProtocol:@protocol(TSFluidTablePreviewCellDelegate)] ? ((id<TSFluidTablePreviewCellDelegate>)self.fluidTablePreviewCellHandler) : nil;
+//        TSFluidTablePreviewCell *fluidTableCell = [self.fluidService getCell:messageInfo
+//                                                               messageEntity:messageEntity
+//                                                                chatDelegate:fluidTablePreviewCellDelegate];
+//        // because you have model here
+//        if (fluidTableCell != nil) {
+//            fluidTableCell.canReplyToChat = [self shouldAllowReplyToChat];
+//            fluidTableCell.canQuoteMessage = [self canQuoteMessageID:messageInfo.tsID];
+//            [fluidTableCell start:self.accountHandle];
+//            cell = fluidTableCell;
+//        }
+//    }
     else if (isTranscriptMessage) {
         cell = [AXPUtilities emptyCell:tableView];
     }
@@ -9867,7 +9974,10 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
         {
             self.scrollToMessageID = nil;
         }
-        [self setActivitySpinnerWithText:nil showSpinner:NO];
+        if (self.isLoadingIndicatorInChatEnabled)
+        {
+            [self setActivitySpinnerWithText:nil showSpinner:NO];
+        }
     }
     
     [self highlightCellIfTriggered:messageInfo.tsID forCell:cell];
@@ -9941,13 +10051,23 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     }
 }
 
-- (GradientObject *) chatBubbleGradientColors
+- (void) updateBubbleColors
 {
-    GradientObject *gradientObj = [[GradientObject alloc] init];
-    [gradientObj addWithColor:self.legacyAppearanceProxy.chatMessageSentGradientStartColor at:0];
-    [gradientObj addWithColor:self.legacyAppearanceProxy.chatMessageSentGradientMidColor at:0.25];
-    [gradientObj addWithColor:self.legacyAppearanceProxy.chatMessageSentGradientEndColor at:1];
-    return gradientObj;
+    GradientObject *resultGradient = [[GradientObject alloc] init];
+    [resultGradient addWithColor:TSTheme.current.chatMessageSentGradientStartColor at:0];
+    [resultGradient addWithColor:TSTheme.current.chatMessageSentGradientMidColor at:0.25];
+    [resultGradient addWithColor:TSTheme.current.chatMessageSentGradientEndColor at:1];
+    self.bubbleGradient = resultGradient;
+    
+    id<PersonalizationManagerObjCBridge> personalizationManager = [ResolveProtocol(DIContainerRegistrar) accountDIContainerFor:self.accountHandle.userKey].dependenciesObjcBridge.personalizationManagerObjCBridge;
+    if (personalizationManager.isPersonalizationEnabled) {
+        NSString *themeId = [AXPCtx threadForID:self.threadID].themeId;
+        GradientObject *themeGradient = [personalizationManager getMessageGradientObjectForThemeId:themeId isDarkTheme:self.legacyAppearanceProxy.isDarkTheme];
+        if (themeGradient) {
+            LogInfoAH(self.logger, @"Setting %@ theme", themeId);
+            self.bubbleGradient = themeGradient;
+        }
+    }
 }
 
 - (void)viewDidLayoutSubviews
@@ -9962,7 +10082,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     
     if (self.dynamicDecorationType != DynamicDecorationTypeNone)
     {
-        [tableView applyGradientDecorationForCell:cell at:indexPath gradient:self.chatBubbleGradientColors];
+        [tableView applyGradientDecorationForCell:cell at:indexPath gradient:self.bubbleGradient];
     }
     
     if (self.isScrollingToTop && indexPath.row == 0 && indexPath.section == 0)
@@ -10159,36 +10279,23 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
                  seenByCount:(NSInteger)seenByCount
                   totalCount:(NSInteger)totalCount
 {
-    if (!self.accountHandle.policyManager.shouldShowReadByInContextMenuForAllMessage || seenByCount == 0 || seenByCount == totalCount)
+    if (seenByCount == 0 || seenByCount == totalCount)
     {
         return @"";
     }
     
-    BOOL messageFromMe = message.ts_isSentByMe.boolValue == YES;
     NSNumber *msgArrivalTime = message.ts_numericArrivalTime;
-    NSString *sentById = messageFromMe ? @"" : message.from;
     NSMutableArray<NSString *> *seenByList = [NSMutableArray new];
     NSString *seeByListString;
-    
-    if (!messageFromMe)
-    {
-        [seenByList addObject:AXPLocalizedString(@"YouLabel")];
-    }
     
     for (id key in self.allRecipientsConsumptionHorizons)
     {
         NSString *mri = (NSString *)key;
-        if (seenByList.count == TSkReadReceiptSeenByListSize || seenByList.count == seenByCount)
+        if (seenByList.count == TSkReadReceiptSeenByListSize)
         {
             // seen by list contains enough users
             break;
         }
-        if (!messageFromMe && [sentById isEqual:mri])
-        {
-            // message sender is in the list, should not include it in seen by list
-            continue;
-        }
-        
         if ([self.allRecipientsConsumptionHorizons objectForKey:key].longLongValue >= msgArrivalTime.longLongValue)
         {
             TSUserInfo *userInfo = [self userInfoForID:mri];
@@ -11857,6 +11964,16 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
                           accountHandle:self.accountHandle];
     }
     
+    TSSMessage *message = [TSSMessage messageForID:messageInfo.tsID andThreadID:messageInfo.threadID inManagedObjectContext:self.accountHandle.mainMOC];
+    if (self.isFluidObject) {
+        TSFluidTablePreviewCell *fluidView = [self.fluidService getCell:messageInfo messageEntity:message chatDelegate:(id<TSFluidTablePreviewCellDelegate>)self.fluidTablePreviewCellHandler];
+        [fluidView start:self.accountHandle msgInfo:messageInfo vcHeight:self.view.bounds.size.height];
+        TSThread *thread = [AXPCtx threadForID:messageInfo.threadID];
+        BOOL isOneOnOne = thread && [thread isOneOnOneChat];
+        [cell addLoopComponentPreview:fluidView isSentByMe:[[message ts_isSentByMe] boolValue] isOnGroupChat:!isOneOnOne];
+        [cell setClearBubbleColor:YES];
+    }
+    
     if ([messageInfo hasAttachments] && ((currentState == TSDLPStateWarning || currentState == TSDLPStateBlocked) ? (messageInfo.policyProperties.policyOriginalContentFetched.boolValue || [messageInfo.attributedContent.string isNotNilOrEmpty]) : YES))
     {
         // File attachments
@@ -11934,12 +12051,14 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
     if (currentState != TSDLPStateBlocked)
     {
         BOOL isMeetingChiclet = [self isMessageInfoForMeetingChiclet:messageInfo];
-        
+        id<ReactionsViewDelegate> reactionsViewDelegate = [self.reactionsViewDelegateHandler conformsToProtocol:@protocol(ReactionsViewDelegate)] ? ((id<ReactionsViewDelegate>)self.reactionsViewDelegateHandler) : nil;
         [cell configureReactionsViewForMessage:messageInfo
                            withLeftCellMessage:isLeftCell
                              needCustomPadding:isMeetingChiclet
+                individualReactionPillsEnabled:[self.experimentationService boolForAgentName:TSECSTeamName keyPath:TSECSChatEnableIndividualReactionPills defaultValue:NO]
+                      canSendExpandedReactions:self.accountHandle.policyManager.canSendExpandedReactions
                                  accountHandle:self.accountHandle
-                              reactionDelegate:self.reactionsViewDelegateHandler];
+                              reactionDelegate:reactionsViewDelegate];
         
         if ([TSTranslationManager isAutomaticChatTranslationSuggestionEnabled:self.accountHandle])
         {
@@ -11993,6 +12112,7 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
 
 - (NSMutableAttributedString *)addChicletIfMeetingLink:(TSMessageInfo *)messageInfo cell:(TSChatMessageViewCell *)cell
 {
+    AssertMainThread();
     NSMutableAttributedString *messageContent = [self replaceGifWithURLIfNeeded:messageInfo];
     
     if([self.accountHandle.ecsManager isShareMeetingChicletEnabled])
@@ -12001,77 +12121,63 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
         
         NSString *meetingUrlString = @"";
         for (NSString *currStr in allComps) {
-            if ([currStr containsString:@"https://teams.microsoft.com/l/meetup-join"]) {
-                meetingUrlString = currStr.removeWhitespaces;
+            
+            meetingUrlString = currStr.removeWhitespaces;
+            NSURL *meetingURL = [NSURL URLWithString:meetingUrlString];
+            //Handling "https://teams.microsoft.com/l/meetup-join" kind of urls
+            if (meetingURL && [meetingURL isSkypeTeamsLink] &&
+                [[self.accountHandle policyManager] isPrivateMeetingEnabled] &&
+                meetingURL.isRegularLinkToMeetupJoin) {
                 
-                if ([meetingUrlString isNotNilOrEmpty]) {
+                NSString *threadID = meetingURL.pathComponents[3];
+                
+                TSMeetingItemViewData *eventData = [TSMeetingTabbedUXUtilities getEventDataForThreadId:threadID accountHandle:self.accountHandle];
+                TSCalEventDetails *event = [TSCalEventDetails calEventDetailsForThread:threadID inManagedObjectContext:self.accountHandle.mainMOC];
+                
+                if(eventData)
+                {
+                    NSString *removeString = [NSString stringWithFormat:@"\n%@\n%@", meetingUrlString, AXPLocalizedString(@"shrLnkDsc")];
                     
-                    NSURL *meetingURL = [NSURL URLWithString:meetingUrlString];
-                    NSString *threadID = meetingURL.pathComponents[3];
-                    
-                    TSMeetingItemViewData *eventData = [TSMeetingTabbedUXUtilities getEventDataForThreadId:threadID accountHandle:self.accountHandle];
-                    TSCalEventDetails *event = [TSCalEventDetails calEventDetailsForThread:threadID inManagedObjectContext:self.accountHandle.mainMOC];
-                    
-                    if(eventData)
+                    NSRange removeRange = [messageContent.string rangeOfString:removeString];
+                    if(removeRange.location != NSNotFound)
                     {
-                        NSString *removeString = [NSString stringWithFormat:@"\n%@\n%@", meetingUrlString, AXPLocalizedString(@"shrLnkDsc")];
-                        
-                        NSRange removeRange = [messageContent.string rangeOfString:removeString];
-                        if(removeRange.location != NSNotFound)
-                        {
-                            [messageContent deleteCharactersInRange:removeRange];
-                        }
-                        
-                        NSRange removeLinkRange = [messageContent.string rangeOfString:meetingUrlString];
-                        if(removeLinkRange.location != NSNotFound)
-                        {
-                            [messageContent deleteCharactersInRange:removeLinkRange];
-                        }
-                        
-                        NSRange removeSuffixRange = [messageContent.string rangeOfString:AXPLocalizedString(@"shrLnkDsc")];
-                        if(removeSuffixRange.location != NSNotFound)
-                        {
-                            [messageContent deleteCharactersInRange:removeSuffixRange];
-                        }
-                        
-                        messageContent = [[messageContent trimTrailingWhiteSpace] mutableCopy];
-                        
-                        TSWeakify(self);
-                        Chiclet *meetingChiclet = [Chiclet withAutoLayout];
-                        [TSMeetingTabbedUXUtilities setMeetingChiclet:meetingChiclet
-                                                        WithEventData:eventData
-                                                                event:event
-                                                      showCloseButton:NO
-                                                                onTap:^{
-                            
-                            TSStrongifyAndReturnIfNil(self);
-                            NSString *eventId = eventData.calendarEventId ?: event.tsID;
-                            [TSMeetingCoordinator showMeetingDetailsWithId:eventId meetingStartTimeFromNotification:eventData.startTime fromSourceViewController:self withAccountHandle:self.accountHandle];
-                        }
-                                                            onJoinTap:^{
-                            
-                            TSStrongifyAndReturnIfNil(self);
-                            TSCallParameters *callParams = [[TSCallParameters alloc] init];
-                            callParams.inviteURL = eventData.skypeTeamsMeetingUrl;
-                            [TSCallNavigationUtilities joinMeetingFrom: [AXPAppViewController activeViewController]
-                                                      teamsMeetingType: eventData.teamsMeetingType
-                                                           containerId: eventData.threadId
-                                                         rootMessageId: eventData.messageId
-                                                             messageID: NULL
-                                                              tenantId: eventData.tenantId
-                                                           organizerId: eventData.organizerId
-                                                           meetingData: eventData.meetingData
-                                                          meetingTitle: eventData.subject
-                                                         correlationID: @""
-                                                      skipTenantChecks: NO
-                                                              animated: YES
-                                                         accountHandle: self.accountHandle
-                                                        callParameters: callParams];
-                        }
-                                                       onAccessoryTap:^{}];
-                        
-                        [cell addMeetingAttachmentView:meetingChiclet];
+                        [messageContent deleteCharactersInRange:removeRange];
                     }
+                    
+                    NSRange removeLinkRange = [messageContent.string rangeOfString:meetingUrlString];
+                    if(removeLinkRange.location != NSNotFound)
+                    {
+                        [messageContent deleteCharactersInRange:removeLinkRange];
+                    }
+                    
+                    NSRange removeSuffixRange = [messageContent.string rangeOfString:AXPLocalizedString(@"shrLnkDsc")];
+                    if(removeSuffixRange.location != NSNotFound)
+                    {
+                        [messageContent deleteCharactersInRange:removeSuffixRange];
+                    }
+                    
+                    messageContent = [[messageContent trimTrailingWhiteSpace] mutableCopy];
+                    
+                    TSWeakify(self);
+                    Chiclet *meetingChiclet = [Chiclet withAutoLayout];
+                    [TSMeetingTabbedUXUtilities setMeetingChiclet:meetingChiclet
+                                                    WithEventData:eventData
+                                                            event:event
+                                                  showCloseButton:NO
+                                                            onTap:^{
+                        
+                        TSStrongifyAndReturnIfNil(self);
+                        NSString *eventId = eventData.calendarEventId ?: event.tsID;
+                        [TSMeetingCoordinator showMeetingDetailsWithId:eventId meetingStartTimeFromNotification:eventData.startTime fromSourceViewController:self withAccountHandle:self.accountHandle];
+                    }
+                                                        onJoinTap:^{
+                        
+                        TSStrongifyAndReturnIfNil(self);
+                        [[TSUniversalLinkManager defaultManager] handleUniversalLink:meetingURL accountHandle:self.accountHandle];
+                    }
+                                                   onAccessoryTap:^{}];
+                    
+                    [cell addMeetingAttachmentView:meetingChiclet];
                 }
             }
         }
@@ -12257,15 +12363,14 @@ static const NSTimeInterval TSkTooltipAutoHideDelay = 6.0;
             [weakSelf.tableView beginUpdates];
             for(TSChatMessageViewCell *cell in weakSelf.tableView.visibleCells)
             {
-                if ([cell isKindOfClass:TSChatMessageViewCell.class] && !cell.presenceIcon.hidden)
+                if ([cell isKindOfClass:TSChatMessageViewCell.class] && !cell.userPresenceStatusView.hidden)
                 {
                     // TODO: (danboe) - controller should not know about these 2 imageviews
                     // refactor to cell class
                     TSPresenceStatus status = [[TSPresenceService defaultService] presenceStatusForUser:cell.fromUserID];
+                    PresenceStatus presenceStatus = [self presenceStatus: status];
                     
-                    [TSPhotoUtils setPresenceForImageView:cell.presenceIcon
-                                      withBackgroundColor:cell.profileImageView.backgroundColor
-                                        forPresenceStatus:status];
+                    [cell.userPresenceStatusView updateViewWithStatus: presenceStatus];
                 }
             }
             [weakSelf.tableView endUpdates];
@@ -12495,9 +12600,13 @@ shouldInteractWithURL:(NSURL *)URL
             {
                 //Not found, need to load more items
                 [self.messageFetchEngine getNextPageFromSyncDate:self.lastMessageDate];
-                //Show loading indicator
-                [self setActivitySpinnerWithText:AXPLocalizedString(@"loadOldMsg")
-                                     showSpinner:YES];
+                
+                if (self.isLoadingIndicatorInChatEnabled)
+                {
+                    //Show loading indicator
+                    [self setActivitySpinnerWithText:AXPLocalizedString(@"loadOldMsg")
+                                         showSpinner:YES];
+                }
             }
         }
         
@@ -13182,7 +13291,10 @@ shouldInteractWithURL:(NSURL *)URL
         [TSDispatchUtilities dispatchOnMainThread:^{
             [weakSelf hideInvertedPulldownSpinner];
             [weakSelf stopActivityIndicator];
-            [weakSelf setActivitySpinnerWithText:nil showSpinner:NO];
+            if (self.isLoadingIndicatorInChatEnabled)
+            {
+                [weakSelf setActivitySpinnerWithText:nil showSpinner:NO];
+            }
         }];
         return;
     }
@@ -13415,9 +13527,12 @@ shouldInteractWithURL:(NSURL *)URL
                 {
                     //Not found, need to load more items
                     [weakSelf.messageFetchEngine getNextPageFromSyncDate:weakSelf.lastMessageDate];
-                    //Show loading indicator
-                    [weakSelf setActivitySpinnerWithText:AXPLocalizedString(@"loadOldMsg")
-                                             showSpinner:YES];
+                    if (weakSelf.isLoadingIndicatorInChatEnabled)
+                    {
+                        //Show loading indicator
+                        [weakSelf setActivitySpinnerWithText:AXPLocalizedString(@"loadOldMsg")
+                                                 showSpinner:YES];
+                    }
                 }
             }
         }
@@ -13492,7 +13607,7 @@ shouldInteractWithURL:(NSURL *)URL
 - (void) applyDynamicDecorationIfNeeded
 {
     if (self.dynamicDecorationType != DynamicDecorationTypeNone) {
-        [self.tableView applyGradientDecorationForVisibleCellsWithGradient:self.chatBubbleGradientColors];
+        [self.tableView applyGradientDecorationForVisibleCellsWithGradient:self.bubbleGradient];
     }
 }
 
@@ -15289,6 +15404,10 @@ shouldInteractWithURL:(NSURL *)URL
 {
     if (([[message ts_isSentByMe] boolValue] || self.accountHandle.policyManager.shouldShowReadByInContextMenuForAllMessage) && ![message.isLocal boolValue])
     {
+        if (self.accountHandle.policyManager.shouldShowReadByInContextMenuForAllMessage && [self.recipientIDs count] == 1)
+        {
+            return NO;
+        }
         if ((self.threadType == TSThreadTypeGroupChat || self.threadType == TSThreadTypePrivateMeeting))
         {
             return [self readReceiptsEnabled];
@@ -16564,6 +16683,7 @@ shouldInteractWithURL:(NSURL *)URL
 
 - (void)placeCall:(BOOL)video scenarioName:(NSString*)scenarioName phoneNumber:(NSString*)phoneNumber
 {
+    NSUUID *callUUID = [NSUUID UUID];
     if (![NSString isNilOrEmpty:phoneNumber])
     {
         [TSCallNavigationUtilities showDelegatorsAndPlacePSTNCallFrom:self
@@ -16571,6 +16691,7 @@ shouldInteractWithURL:(NSURL *)URL
                                                  withEmergencyContent:nil
                                                         correlationID:scenarioName
                                                         accountHandle:self.accountHandle
+                                                              callUUID:callUUID
                                                            completion:nil];
     }
     else
@@ -16589,10 +16710,12 @@ shouldInteractWithURL:(NSURL *)URL
                            panelUri:nil
                      panelUriParams:nil
                            threadId:self.threadID
-                         threadType:self.threadType == TSThreadTypeGroupChat ? TSkThreadTypeGroupChat : TSkThreadTypeOneOnOneChat];
+                         threadType:self.threadType == TSThreadTypeGroupChat ? TSkThreadTypeGroupChat : TSkThreadTypeOneOnOneChat
+                           callType:[TSCallUtilities biCallTypeStringForCallType:(self.threadType == TSThreadTypeGroupChat) ? TSGroupCall : TSOneOnOneCall meetingType:TSCallMeetingTypeUndefined]
+                             callId:[callUUID.UUIDString lowercaseString]];
         
         
-        [self resolveThreadAndPlaceCallWithVideo:video];
+        [self resolveThreadAndPlaceCallWithVideo:video callUUID:callUUID];
     }
 }
 
@@ -17770,6 +17893,20 @@ shouldInteractWithURL:(NSURL *)URL
     }
 }
 
+- (void)conversationDeleted:(NSNotification *)notification
+{
+    NSDictionary *userInfo = [notification userInfo];
+    NSSet *updatedConversationList = [userInfo objectForKey:TSkNotificationKeyForConversations];
+    if ([updatedConversationList containsObject:self.threadID])
+    {
+        TSWeakify(self);
+        [TSDispatchUtilities dispatchOnMainThread:^{
+            TSStrongifyAndReturnIfNil(self);
+            [self backButtonTapped:nil];
+        }];
+    }
+}
+
 - (void)threadUpdated:(NSNotification *)notification
 {
     //Check if chat disabled meeting option changed
@@ -17884,7 +18021,6 @@ shouldInteractWithURL:(NSURL *)URL
 #pragma mark - Msg Animations
 - (void) setupMsgAnimationFor:(TSMessageInfo *)messageInfo andCell:(TSChatMessageViewCell *)messageCell
 {
-#ifndef TEAMSAPP_SDK
     if (self.mAnimationCoordinator == nil)
     {
         id<MADependencyRegistrarProtocol> animationDependencyRegistrar = ResolveProtocol(MADependencyRegistrarProtocol);
@@ -17926,7 +18062,6 @@ shouldInteractWithURL:(NSURL *)URL
             [((TSBaseTableViewCell *)messageCell) highlightSearchResultCellForQuickReact:NO completion:nil];
         }];
     }
-#endif
 }
 
 - (void)handleLaunchImmersiveReader:(NSArray<TSSMessage *>*) messages
@@ -17991,7 +18126,7 @@ shouldInteractWithURL:(NSURL *)URL
                                         tappedMessageId:messageId
                                         tappedSrcUrl:imageUrl
                                         navigationController:self.navigationController
-                                        reverseSlideOrder:YES
+                                        reverseSlideOrder:self.isInvertedView
                                         updateStatusBar:updateStatusBar
                                         loadMemeController:[self.composeViewController isMemesInputActionEnabled] ? loadMemeController : nil
                                         onDismiss:^{
