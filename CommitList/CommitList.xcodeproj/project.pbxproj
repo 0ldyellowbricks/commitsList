@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		4D1EF2B627DBB68A007950ED /* HelpTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1EF2B527DBB68A007950ED /* HelpTest.swift */; };
 		4D1EF2B827DBBC7C007950ED /* master.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1EF2B727DBBC7C007950ED /* master.swift */; };
+		4D6A9F542808AA07008938AF /* TSChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D6A9F532808AA07008938AF /* TSChatViewController.m */; };
 		4D7CB69725C35BA800B383A0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7CB69625C35BA800B383A0 /* AppDelegate.swift */; };
 		4D7CB69925C35BA800B383A0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7CB69825C35BA800B383A0 /* SceneDelegate.swift */; };
 		4D7CB69B25C35BA800B383A0 /* CommitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7CB69A25C35BA800B383A0 /* CommitController.swift */; };
@@ -44,6 +45,7 @@
 /* Begin PBXFileReference section */
 		4D1EF2B527DBB68A007950ED /* HelpTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpTest.swift; sourceTree = "<group>"; };
 		4D1EF2B727DBBC7C007950ED /* master.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = master.swift; sourceTree = "<group>"; };
+		4D6A9F532808AA07008938AF /* TSChatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSChatViewController.m; sourceTree = "<group>"; };
 		4D7CB69325C35BA700B383A0 /* CommitList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CommitList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D7CB69625C35BA800B383A0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4D7CB69825C35BA800B383A0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -90,6 +92,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4D6A9F522808A9BA008938AF /* compare */ = {
+			isa = PBXGroup;
+			children = (
+				4D6A9F532808AA07008938AF /* TSChatViewController.m */,
+			);
+			path = compare;
+			sourceTree = "<group>";
+		};
 		4D7CB68A25C35BA700B383A0 = {
 			isa = PBXGroup;
 			children = (
@@ -113,6 +123,7 @@
 		4D7CB69525C35BA700B383A0 /* CommitList */ = {
 			isa = PBXGroup;
 			children = (
+				4D6A9F522808A9BA008938AF /* compare */,
 				4D8585C525C36F8C008D663D /* Service */,
 				4D8585BC25C36EE9008D663D /* Utilities */,
 				4D8585B225C3693B008D663D /* ViewModel */,
@@ -272,6 +283,7 @@
 				TargetAttributes = {
 					4D7CB69225C35BA700B383A0 = {
 						CreatedOnToolsVersion = 12.3;
+						LastSwiftMigration = 1330;
 					};
 					4D7CB6A825C35BAC00B383A0 = {
 						CreatedOnToolsVersion = 12.3;
@@ -345,6 +357,7 @@
 				4D85859525C3617A008D663D /* MyHelper.swift in Sources */,
 				4D8585B525C3695B008D663D /* CommitViewModel.swift in Sources */,
 				4D85859D25C36212008D663D /* CommitCell.swift in Sources */,
+				4D6A9F542808AA07008938AF /* TSChatViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -512,6 +525,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = CommitList/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -520,6 +534,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.CommitList.CommitList.CommitList;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -530,6 +545,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = CommitList/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
